@@ -3,9 +3,13 @@
 import { useEffect, useRef } from "react";
 import { useChatSession } from "@/hooks/use-chat-session";
 import type { ThreadState } from "@/shared/types/thread";
-import { Message } from "./message";
+import { ChatMessage } from "./message";
 import { Composer } from "./composer";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
 
 export function Chat({
   threadId,
@@ -15,12 +19,7 @@ export function Chat({
   initialState: ThreadState | null;
 }) {
   const chat = useChatSession(threadId, initialState);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const startedRef = useRef(false);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat.messages]);
 
   // Consume a first message handed off from the home composer.
   useEffect(() => {
@@ -37,10 +36,10 @@ export function Chat({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <ScrollArea className="min-h-0 flex-1">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
+      <Conversation className="flex-1">
+        <ConversationContent className="mx-auto w-full max-w-3xl">
           {chat.messages.map((message) => (
-            <Message
+            <ChatMessage
               key={message.id}
               message={message}
               onRespond={chat.respond}
@@ -51,9 +50,10 @@ export function Chat({
           {chat.error && (
             <p className="text-destructive text-sm">{chat.error.message}</p>
           )}
-          <div ref={bottomRef} />
-        </div>
-      </ScrollArea>
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+
       <div className="mx-auto w-full max-w-3xl px-4 pb-4">
         <Composer
           onSend={chat.sendMessage}

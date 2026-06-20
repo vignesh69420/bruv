@@ -7,21 +7,25 @@ import type {
   EveMessagePart,
 } from "eve/react";
 import type { InputResponse } from "eve/client";
-import { Brain, ChevronRight, Wrench } from "lucide-react";
+import { Wrench } from "lucide-react";
 import type { WeatherOutput } from "@/shared/tools/weather";
-import { Markdown } from "./markdown";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
+import { Button } from "@/components/ui/button";
 import { WeatherCard } from "./tool/weather-card";
 import { RepoListCard, type RepoListOutput } from "./tool/repo-list-card";
 import { PrListCard, type PrListOutput } from "./tool/pr-list-card";
 import { ToolResult } from "./tool/tool-result";
-import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
-export function Message({
+export function ChatMessage({
   message,
   onRespond,
   canRespond,
@@ -36,25 +40,27 @@ export function Message({
       .join("")
       .trim();
     return (
-      <div className="flex justify-end">
-        <div className="bg-secondary text-secondary-foreground max-w-[80%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm whitespace-pre-wrap">
-          {text}
-        </div>
-      </div>
+      <Message from="user">
+        <MessageContent>
+          <span className="whitespace-pre-wrap">{text}</span>
+        </MessageContent>
+      </Message>
     );
   }
 
   return (
-    <div className="flex flex-col gap-2.5 text-sm">
-      {message.parts.map((part, index) => (
-        <Part
-          key={index}
-          part={part}
-          onRespond={onRespond}
-          canRespond={canRespond}
-        />
-      ))}
-    </div>
+    <Message from="assistant">
+      <MessageContent>
+        {message.parts.map((part, index) => (
+          <Part
+            key={index}
+            part={part}
+            onRespond={onRespond}
+            canRespond={canRespond}
+          />
+        ))}
+      </MessageContent>
+    </Message>
   );
 }
 
@@ -68,30 +74,20 @@ function Part({
   canRespond: boolean;
 }) {
   if (part.type === "text") {
-    return part.text ? <Markdown>{part.text}</Markdown> : null;
+    return part.text ? <MessageResponse>{part.text}</MessageResponse> : null;
   }
   if (part.type === "reasoning") {
-    return part.text ? <Reasoning text={part.text} /> : null;
+    return part.text ? (
+      <Reasoning isStreaming={part.state === "streaming"}>
+        <ReasoningTrigger />
+        <ReasoningContent>{part.text}</ReasoningContent>
+      </Reasoning>
+    ) : null;
   }
   if (part.type === "dynamic-tool") {
     return <ToolPart part={part} onRespond={onRespond} canRespond={canRespond} />;
   }
   return null;
-}
-
-function Reasoning({ text }: { text: string }) {
-  return (
-    <Collapsible className="text-muted-foreground">
-      <CollapsibleTrigger className="hover:text-foreground flex items-center gap-1.5 text-xs transition-colors">
-        <Brain className="size-3.5" />
-        <span>thinking</span>
-        <ChevronRight className="size-3" />
-      </CollapsibleTrigger>
-      <CollapsibleContent className="border-border mt-1.5 ml-1.5 border-l pl-3 text-xs leading-relaxed whitespace-pre-wrap opacity-80">
-        {text}
-      </CollapsibleContent>
-    </Collapsible>
-  );
 }
 
 function ToolPart({
@@ -116,8 +112,6 @@ function ToolPart({
     );
   }
 
-  // Rich result cards for known tools; everything else gets a generic
-  // collapsible result card.
   if (part.state === "output-available") {
     if (name === "weather") {
       return <WeatherCard output={part.output as WeatherOutput} />;
