@@ -1,48 +1,56 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
-import { githubFetch } from "../lib/github.js";
+import {
+  NOT_CONNECTED,
+  isGithubNotConnected,
+  userGithubFetch,
+  userGithubToken,
+} from "../lib/github-token.js";
 
 type GhRepo = {
   full_name: string;
   private: boolean;
   description: string | null;
-  html_url: string;
   pushed_at: string | null;
+  html_url: string;
 };
 
-// The GitHub MCP connection has no tool that lists every repo the app can
-// reach (its `search_repositories` needs a query). This fills that gap via the
-// REST /installation/repositories endpoint, sorted most-recently-pushed first.
+// Lists the repositories the CONNECTED USER can access (their own + orgs), via
+// their Vercel Connect GitHub token.
 export default defineTool({
   description:
-    "List the GitHub repositories bruv can access. Use this whenever someone " +
-    "asks to list, browse, or count repos and has NOT given a search query. " +
-    "For searching by keyword, use the GitHub connection's search instead.",
+    "List the GitHub repositories the connected user can access (their own and their orgs). Use this whenever someone asks to list, browse, or count repos. No query needed.",
   inputSchema: z.object({
     nameContains: z
       .string()
       .optional()
       .describe("case-insensitive substring to filter repo names by"),
-    limit: z
-      .number()
-      .int()
-      .min(1)
-      .max(200)
-      .default(50)
-      .describe("max repos to return"),
+    limit: z.number().int().min(1).max(200).default(50),
   }),
-  async execute({ nameContains, limit }) {
+  async execute({ nameContains, limit }, ctx) {
+    const userId = ctx.session.auth.current?.principalId;
+    if (!userId) return NOT_CONNECTED;
+
+    let token: string;
+    try {
+      token = await userGithubToken(userId);
+    } catch (error) {
+      if (isGithubNotConnected(error)) return NOT_CONNECTED;
+      throw error;
+    }
+
     const all: GhRepo[] = [];
-    for (let page = 1; ; page++) {
-      const res = await githubFetch(
-        `/installation/repositories?per_page=100&page=${page}`,
+    for (let page = 1; page <= 5; page++) {
+      const res = await userGithubFetch(
+        token,
+        `/user/repos?per_page=100&sort=pushed&page=${page}`,
       );
       if (!res.ok) {
         throw new Error(`GitHub list repos failed: ${res.status} ${await res.text()}`);
       }
-      const data = (await res.json()) as { repositories: GhRepo[] };
-      all.push(...data.repositories);
-      if (data.repositories.length < 100) break;
+      const data = (await res.json()) as GhRepo[];
+      all.push(...data);
+      if (data.length < 100) break;
     }
 
     let repos = all.map((r) => ({
@@ -57,7 +65,6 @@ export default defineTool({
       const needle = nameContains.toLowerCase();
       repos = repos.filter((r) => r.name.toLowerCase().includes(needle));
     }
-    repos.sort((a, b) => (b.pushedAt ?? "").localeCompare(a.pushedAt ?? ""));
 
     return { total: repos.length, repos: repos.slice(0, limit) };
   },
