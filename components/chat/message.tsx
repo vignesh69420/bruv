@@ -8,8 +8,11 @@ import type {
 } from "eve/react";
 import type { InputResponse } from "eve/client";
 import { Brain, ChevronRight, Wrench } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type { WeatherOutput } from "@/shared/tools/weather";
 import { Markdown } from "./markdown";
+import { WeatherCard } from "./tool/weather-card";
+import { RepoListCard, type RepoListOutput } from "./tool/repo-list-card";
+import { ToolResult } from "./tool/tool-result";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -112,14 +115,24 @@ function ToolPart({
     );
   }
 
+  // Rich result cards for known tools; everything else gets a generic
+  // collapsible result card.
+  if (part.state === "output-available") {
+    if (name === "weather") {
+      return <WeatherCard output={part.output as WeatherOutput} />;
+    }
+    if (name === "list_repos") {
+      return <RepoListCard output={part.output as RepoListOutput} />;
+    }
+    return <ToolResult name={name} output={part.output} />;
+  }
+
   const label =
     part.state === "output-error"
       ? `${name} failed`
       : part.state === "output-denied"
         ? `${name} skipped`
-        : part.state === "output-available"
-          ? `used ${name}`
-          : `${name}…`;
+        : `${name}…`;
 
   return (
     <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
