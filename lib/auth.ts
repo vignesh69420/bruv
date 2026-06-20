@@ -13,10 +13,20 @@ const trustedOrigins = [
   "http://localhost:3000",
 ];
 
+// GitHub social login. Only enabled once the OAuth app credentials are set, so
+// it's a no-op until then (no broken provider).
+const githubClientId = process.env.GITHUB_CLIENT_ID?.trim();
+const githubClientSecret = process.env.GITHUB_CLIENT_SECRET?.trim();
+const socialProviders =
+  githubClientId && githubClientSecret
+    ? { github: { clientId: githubClientId, clientSecret: githubClientSecret } }
+    : undefined;
+
 export const auth = betterAuth({
   ...(baseURL ? { baseURL } : {}),
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins,
   database: drizzleAdapter(db, { provider: "pg", schema }),
   emailAndPassword: { enabled: true },
+  ...(socialProviders ? { socialProviders } : {}),
 });
