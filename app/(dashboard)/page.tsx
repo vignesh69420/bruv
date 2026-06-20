@@ -1,18 +1,50 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import {
+  CodeBracketSquareIcon,
+  ListBulletIcon,
+  CloudIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
 import { useThreads } from "@/hooks/use-threads";
+import { useSession } from "@/lib/auth-client";
 import { Composer } from "@/components/chat/composer";
 
 const SUGGESTIONS = [
-  "show me my open PRs",
-  "what's on my Linear?",
-  "weather in london",
+  { label: "show me my open PRs", icon: CodeBracketSquareIcon },
+  { label: "what's on my Linear?", icon: ListBulletIcon },
+  { label: "weather in london", icon: CloudIcon },
+  { label: "draw me something stupid", icon: SparklesIcon },
 ];
+
+// bruv-voice subtitles, picked by a stable per-load index (no hydration mismatch
+// because the array is read once on the client after mount).
+const SUBTITLES = [
+  "what's the damage?",
+  "what do you need?",
+  "go on then.",
+  "what are we breaking today?",
+  "talk to me.",
+];
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 5) return { word: "still up", emoji: "🦉" };
+  if (h < 12) return { word: "morning", emoji: "☀️" };
+  if (h < 18) return { word: "afternoon", emoji: "👋" };
+  return { word: "evening", emoji: "🌙" };
+}
 
 export default function Home() {
   const { createThread } = useThreads();
+  const { data: session } = useSession();
   const router = useRouter();
+
+  const { word, emoji } = greeting();
+  const firstName = session?.user?.name?.split(" ")[0]?.toLowerCase();
+  const subtitle =
+    SUBTITLES[Math.floor((Date.now() / 60000) % SUBTITLES.length)];
 
   async function start(text: string) {
     const thread = await createThread({ title: text });
@@ -22,23 +54,27 @@ export default function Home() {
 
   return (
     <div className="mx-auto flex h-full w-full max-w-2xl flex-col items-center justify-center gap-7 px-4">
-      <div className="flex flex-col items-center gap-1.5 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight lowercase">bruv</h1>
-        <p className="text-muted-foreground text-sm">what do you need?</p>
+      <div className="animate-in fade-in slide-in-from-bottom-2 flex flex-col items-center gap-1.5 text-center duration-500">
+        <h1 className="text-2xl font-semibold tracking-tight lowercase">
+          {word}
+          {firstName ? `, ${firstName}` : ""} {emoji}
+        </h1>
+        <p className="text-muted-foreground text-sm">{subtitle}</p>
       </div>
 
-      <div className="w-full">
+      <div className="animate-in fade-in slide-in-from-bottom-3 w-full duration-500">
         <Composer onSend={start} onStop={() => {}} isBusy={false} autoFocus />
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2">
-        {SUGGESTIONS.map((suggestion) => (
+      <div className="animate-in fade-in flex flex-wrap justify-center gap-2 delay-150 duration-700">
+        {SUGGESTIONS.map(({ label, icon: Icon }) => (
           <button
-            key={suggestion}
-            onClick={() => start(suggestion)}
-            className="text-muted-foreground hover:text-foreground hover:bg-accent border-border rounded-full border px-3 py-1.5 text-xs transition-colors"
+            key={label}
+            onClick={() => start(label)}
+            className="text-muted-foreground hover:text-foreground hover:border-foreground/20 border-border flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors"
           >
-            {suggestion}
+            <Icon className="size-3.5" />
+            {label}
           </button>
         ))}
       </div>

@@ -7,7 +7,7 @@ export interface ImageOutput {
 
 export function ImageCard({ output }: { output: ImageOutput }) {
   return (
-    <figure className="bg-card w-full max-w-sm overflow-hidden rounded-xl border">
+    <figure className="bg-card w-full max-w-sm overflow-hidden rounded-xl border transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
       {/* data URL — next/image can't optimize it, so a plain img is correct here */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

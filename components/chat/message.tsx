@@ -7,7 +7,14 @@ import type {
   EveMessagePart,
 } from "eve/react";
 import type { InputResponse } from "eve/client";
-import { WrenchIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import {
+  ArrowPathIcon,
+  CheckIcon,
+  ClipboardIcon,
+  WrenchIcon,
+} from "@heroicons/react/24/outline";
+import { cn } from "@/lib/utils";
 import type { WeatherOutput } from "@/shared/tools/weather";
 import {
   Message,
@@ -43,7 +50,10 @@ export function ChatMessage({
       .join("")
       .trim();
     return (
-      <Message from="user">
+      <Message
+        from="user"
+        className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+      >
         <MessageContent>
           <span className="whitespace-pre-wrap">{text}</span>
         </MessageContent>
@@ -51,8 +61,16 @@ export function ChatMessage({
     );
   }
 
+  const replyText = message.parts
+    .map((part) => (part.type === "text" ? part.text : ""))
+    .join("")
+    .trim();
+
   return (
-    <Message from="assistant">
+    <Message
+      from="assistant"
+      className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+    >
       <MessageContent>
         {message.parts.map((part, index) => (
           <Part
@@ -63,7 +81,31 @@ export function ChatMessage({
           />
         ))}
       </MessageContent>
+      {replyText && <CopyButton text={replyText} />}
     </Message>
+  );
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      aria-label="Copy reply"
+      onClick={() => {
+        void navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="text-muted-foreground hover:text-foreground -mt-1 flex w-fit items-center gap-1 rounded-md px-1.5 py-1 text-xs opacity-0 transition group-hover:opacity-100"
+    >
+      {copied ? (
+        <CheckIcon className="size-3.5" />
+      ) : (
+        <ClipboardIcon className="size-3.5" />
+      )}
+      {copied ? "copied" : "copy"}
+    </button>
   );
 }
 
@@ -139,20 +181,45 @@ function ToolPart({
     return <ToolResult name={name} output={part.output} />;
   }
 
-  const label =
-    part.state === "output-error"
-      ? `${name} failed`
-      : part.state === "output-denied"
-        ? `${name} skipped`
-        : `${name}…`;
+  const isError = part.state === "output-error";
+  const isDenied = part.state === "output-denied";
+  const running = !isError && !isDenied;
+  const label = isError
+    ? `${name} failed`
+    : isDenied
+      ? `${name} skipped`
+      : `${RUNNING_LABELS[name] ?? name}…`;
 
   return (
-    <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-      <WrenchIcon className="size-3.5" />
-      <span className="font-mono">{label}</span>
+    <div
+      className={cn(
+        "animate-in fade-in flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs duration-300",
+        isError
+          ? "text-destructive border-destructive/30"
+          : "text-muted-foreground bg-muted/40"
+      )}
+    >
+      {running ? (
+        <ArrowPathIcon className="text-brand size-3.5 animate-spin" />
+      ) : (
+        <WrenchIcon className="size-3.5" />
+      )}
+      <span>{label}</span>
     </div>
   );
 }
+
+// friendly, in-voice labels while a tool is mid-flight (falls back to the raw
+// tool name for anything unmapped).
+const RUNNING_LABELS: Record<string, string> = {
+  weather: "checking the weather",
+  list_repos: "pulling your repos",
+  list_prs: "finding your prs",
+  generate_image: "painting something",
+  fortnite_stats: "loading fortnite stats",
+  web_search: "searching the web",
+  save_memory: "saving to memory",
+};
 
 function ApprovalRequest({
   request,

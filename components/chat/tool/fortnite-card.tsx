@@ -24,7 +24,7 @@ export function FortniteCard({ output }: { output: FortniteOutput }) {
   ];
 
   return (
-    <div className="bg-card w-full max-w-sm rounded-xl border p-4">
+    <div className="bg-card w-full max-w-sm rounded-xl border p-4 transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrophyIcon className="text-muted-foreground size-4" />

@@ -21,7 +21,7 @@ export function SourcesCard({ output }: { output: WebSearchOutput }) {
   if (results.length === 0) return null;
 
   return (
-    <div className="bg-card w-full max-w-md rounded-xl border p-1">
+    <div className="bg-card w-full max-w-md rounded-xl border p-1 transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
       <div className="text-muted-foreground flex items-center gap-1.5 px-3 py-2 text-xs">
         <GlobeAltIcon className="size-3.5" />
         {results.length} sources

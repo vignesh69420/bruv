@@ -40,7 +40,7 @@ function extractText(output: unknown): string {
 
 export function ToolResult({ name, output }: { name: string; output: unknown }) {
   return (
-    <Collapsible className="bg-card w-full max-w-md rounded-xl border">
+    <Collapsible className="bg-card w-full max-w-md rounded-xl border transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
       <CollapsibleTrigger className="text-muted-foreground hover:text-foreground flex w-full items-center gap-1.5 px-3 py-2 text-xs transition-colors">
         <WrenchIcon className="size-3.5" />
         <span className="font-mono">used {name}</span>

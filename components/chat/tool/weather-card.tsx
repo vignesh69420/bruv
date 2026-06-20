@@ -29,7 +29,7 @@ function shortDay(value: string) {
 
 export function WeatherCard({ output }: { output: WeatherOutput }) {
   return (
-    <div className="bg-card w-full max-w-sm rounded-xl border p-4">
+    <div className="bg-card w-full max-w-sm rounded-xl border p-4 transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
       <div className="flex items-start justify-between">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium">{output.location}</p>

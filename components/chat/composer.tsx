@@ -71,7 +71,7 @@ export function Composer({
       ) : (
         <Button
           size="icon"
-          className="size-8 shrink-0 rounded-xl"
+          className="bg-brand text-brand-foreground hover:bg-brand/90 size-8 shrink-0 rounded-xl transition-colors disabled:opacity-40"
           onClick={submit}
           disabled={!value.trim()}
           aria-label="Send"
