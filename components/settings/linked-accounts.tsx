@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { CodeBracketIcon } from "@heroicons/react/24/outline";
+import { GithubMark } from "@/components/github-mark";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -68,7 +68,7 @@ export function LinkedAccounts() {
       <CardContent>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <CodeBracketIcon className="size-5" />
+            <GithubMark className="size-5" />
             <div>
               <div className="text-sm">GitHub</div>
               {linked && (
