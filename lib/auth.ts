@@ -29,4 +29,13 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
   emailAndPassword: { enabled: true },
   ...(socialProviders ? { socialProviders } : {}),
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["github"],
+      // A signed-in user can link GitHub even if its email differs from their
+      // account email (they're authenticated and explicitly choosing to link).
+      allowDifferentEmails: true,
+    },
+  },
 });
