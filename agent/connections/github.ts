@@ -1,5 +1,5 @@
 import { defineMcpClientConnection } from "eve/connections";
-import { once } from "eve/tools/approval";
+import { never } from "eve/tools/approval";
 import { getInstallationToken } from "../lib/github.js";
 
 // GitHub's official remote MCP server. Discovers GitHub tools (issues, PRs,
@@ -14,8 +14,9 @@ import { getInstallationToken } from "../lib/github.js";
 // scoped permissions. Token minting lives in ../lib/github.ts and is shared
 // with authored tools. See .env.local for the required env vars.
 //
-// `once()` asks for human approval the first time bruv calls a GitHub tool in a
-// session — a safeguard since some of these tools can create, modify, or delete.
+// `never()` runs GitHub tools without per-call approval — bruv acts as its own
+// scoped GitHub App on your account, and gating every read floods the chat. To
+// re-add guardrails, switch to once()/always() or gate only mutating tools.
 export default defineMcpClientConnection({
   url: "https://api.githubcopilot.com/mcp/",
   description:
@@ -24,5 +25,5 @@ export default defineMcpClientConnection({
   auth: {
     getToken: getInstallationToken,
   },
-  approval: once(),
+  approval: never(),
 });

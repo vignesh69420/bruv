@@ -36,8 +36,8 @@ export function Chat({
   }, [threadId]);
 
   return (
-    <div className="flex h-full flex-col">
-      <ScrollArea className="flex-1">
+    <div className="flex h-full min-h-0 flex-col">
+      <ScrollArea className="min-h-0 flex-1">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
           {chat.messages.map((message) => (
             <Message
