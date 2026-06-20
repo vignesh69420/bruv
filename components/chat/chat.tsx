@@ -38,7 +38,7 @@ export function Chat({
   return (
     <div className="flex h-full min-h-0 flex-col">
       <ScrollArea className="min-h-0 flex-1">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
           {chat.messages.map((message) => (
             <Message
               key={message.id}
@@ -47,22 +47,34 @@ export function Chat({
               canRespond={!chat.isBusy}
             />
           ))}
-          {chat.status === "submitted" && (
-            <p className="text-muted-foreground text-sm">thinking…</p>
-          )}
+          {chat.status === "submitted" && <TypingDots />}
           {chat.error && (
             <p className="text-destructive text-sm">{chat.error.message}</p>
           )}
           <div ref={bottomRef} />
         </div>
       </ScrollArea>
-      <div className="mx-auto w-full max-w-3xl p-4 pt-0">
+      <div className="mx-auto w-full max-w-3xl px-4 pb-4">
         <Composer
           onSend={chat.sendMessage}
           onStop={chat.stop}
           isBusy={chat.isBusy}
         />
       </div>
+    </div>
+  );
+}
+
+function TypingDots() {
+  return (
+    <div className="flex items-center gap-1">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="bg-muted-foreground/60 size-1.5 animate-bounce rounded-full"
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
+      ))}
     </div>
   );
 }

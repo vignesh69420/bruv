@@ -26,25 +26,30 @@ export function Message({
   onRespond: (responses: InputResponse[]) => void;
   canRespond: boolean;
 }) {
-  const isUser = message.role === "user";
+  if (message.role === "user") {
+    const text = message.parts
+      .map((part) => (part.type === "text" ? part.text : ""))
+      .join("")
+      .trim();
+    return (
+      <div className="flex justify-end">
+        <div className="bg-secondary text-secondary-foreground max-w-[80%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm whitespace-pre-wrap">
+          {text}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={cn("flex", isUser && "justify-end")}>
-      <div
-        className={cn(
-          "flex max-w-[85%] flex-col gap-2 rounded-2xl px-4 py-2.5 text-sm",
-          isUser ? "bg-primary text-primary-foreground" : "bg-muted",
-        )}
-      >
-        {message.parts.map((part, index) => (
-          <Part
-            key={index}
-            part={part}
-            onRespond={onRespond}
-            canRespond={canRespond}
-          />
-        ))}
-      </div>
+    <div className="flex flex-col gap-2.5 text-sm">
+      {message.parts.map((part, index) => (
+        <Part
+          key={index}
+          part={part}
+          onRespond={onRespond}
+          canRespond={canRespond}
+        />
+      ))}
     </div>
   );
 }
@@ -73,12 +78,12 @@ function Part({
 function Reasoning({ text }: { text: string }) {
   return (
     <Collapsible className="text-muted-foreground">
-      <CollapsibleTrigger className="flex items-center gap-1 text-xs">
-        <Brain className="size-3" />
+      <CollapsibleTrigger className="hover:text-foreground flex items-center gap-1.5 text-xs transition-colors">
+        <Brain className="size-3.5" />
         <span>thinking</span>
         <ChevronRight className="size-3" />
       </CollapsibleTrigger>
-      <CollapsibleContent className="mt-1 text-xs whitespace-pre-wrap opacity-80">
+      <CollapsibleContent className="border-border mt-1.5 ml-1.5 border-l pl-3 text-xs leading-relaxed whitespace-pre-wrap opacity-80">
         {text}
       </CollapsibleContent>
     </Collapsible>
@@ -118,8 +123,8 @@ function ToolPart({
 
   return (
     <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-      <Wrench className="size-3" />
-      <span>{label}</span>
+      <Wrench className="size-3.5" />
+      <span className="font-mono">{label}</span>
     </div>
   );
 }
@@ -142,7 +147,7 @@ function ApprovalRequest({
         ];
 
   return (
-    <div className="bg-background text-foreground flex flex-col gap-2 rounded-lg border p-3">
+    <div className="bg-card flex max-w-md flex-col gap-3 rounded-xl border p-3.5">
       <p className="text-sm">{request.prompt}</p>
       {canRespond && (
         <div className="flex flex-wrap gap-2">
@@ -155,7 +160,7 @@ function ApprovalRequest({
                   ? "destructive"
                   : option.style === "primary"
                     ? "default"
-                    : "secondary"
+                    : "outline"
               }
               onClick={() =>
                 onRespond([{ requestId: request.requestId, optionId: option.id }])

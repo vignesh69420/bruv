@@ -4,93 +4,99 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { useThreads } from "@/hooks/use-threads";
-import type { ThreadSummary } from "@/shared/types/thread";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/user-menu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 export function AppSidebar() {
   const { threads, createThread, deleteThread } = useThreads();
   const router = useRouter();
   const params = useParams<{ id?: string }>();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const closeOnMobile = () => {
+    if (isMobile) setOpenMobile(false);
+  };
 
   async function newChat() {
     const thread = await createThread({});
+    closeOnMobile();
     router.push(`/chat/${thread.id}`);
   }
 
   return (
-    <aside className="bg-sidebar text-sidebar-foreground flex h-dvh w-64 shrink-0 flex-col border-r">
-      <div className="flex items-center justify-between p-3">
-        <Link href="/" className="px-2 text-lg font-semibold lowercase">
-          bruv
-        </Link>
-        <ThemeToggle />
-      </div>
-
-      <div className="px-3">
-        <Button onClick={newChat} variant="secondary" className="w-full justify-start">
+    <Sidebar>
+      <SidebarHeader className="gap-2">
+        <div className="flex items-center justify-between px-1">
+          <Link
+            href="/"
+            onClick={closeOnMobile}
+            className="text-base font-semibold tracking-tight lowercase"
+          >
+            bruv
+          </Link>
+          <ThemeToggle />
+        </div>
+        <Button
+          onClick={newChat}
+          variant="outline"
+          size="sm"
+          className="w-full justify-start bg-transparent font-normal"
+        >
           <Plus data-icon="inline-start" />
           new chat
         </Button>
-      </div>
+      </SidebarHeader>
 
-      <ScrollArea className="mt-2 flex-1 px-2">
-        <nav className="flex flex-col gap-0.5 pb-2">
-          {threads.map((thread) => (
-            <ThreadRow
-              key={thread.id}
-              thread={thread}
-              active={params?.id === thread.id}
-              onDelete={async () => {
-                await deleteThread(thread.id);
-                if (params?.id === thread.id) router.push("/");
-              }}
-            />
-          ))}
-        </nav>
-      </ScrollArea>
+      <SidebarContent>
+        <SidebarGroup>
+          {threads.length > 0 && <SidebarGroupLabel>chats</SidebarGroupLabel>}
+          <SidebarMenu>
+            {threads.map((thread) => (
+              <SidebarMenuItem key={thread.id}>
+                <SidebarMenuButton
+                  isActive={params?.id === thread.id}
+                  render={
+                    <Link href={`/chat/${thread.id}`} onClick={closeOnMobile} />
+                  }
+                >
+                  <span className="truncate">{thread.title}</span>
+                </SidebarMenuButton>
+                <SidebarMenuAction
+                  showOnHover
+                  aria-label="Delete chat"
+                  onClick={async () => {
+                    await deleteThread(thread.id);
+                    if (params?.id === thread.id) router.push("/");
+                  }}
+                >
+                  <Trash2 />
+                </SidebarMenuAction>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
 
-      <div className="border-t p-2">
+      <SidebarFooter>
         <UserMenu />
-      </div>
-    </aside>
-  );
-}
+      </SidebarFooter>
 
-function ThreadRow({
-  thread,
-  active,
-  onDelete,
-}: {
-  thread: ThreadSummary;
-  active: boolean;
-  onDelete: () => void;
-}) {
-  return (
-    <div
-      className={cn(
-        "group hover:bg-sidebar-accent flex items-center gap-1 rounded-md",
-        active && "bg-sidebar-accent",
-      )}
-    >
-      <Link
-        href={`/chat/${thread.id}`}
-        className="flex-1 truncate px-2 py-1.5 text-sm"
-      >
-        {thread.title}
-      </Link>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7 opacity-0 group-hover:opacity-100"
-        aria-label="Delete chat"
-        onClick={onDelete}
-      >
-        <Trash2 />
-      </Button>
-    </div>
+      <SidebarRail />
+    </Sidebar>
   );
 }
