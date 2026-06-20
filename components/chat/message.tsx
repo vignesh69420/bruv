@@ -12,6 +12,7 @@ import type { WeatherOutput } from "@/shared/tools/weather";
 import { Markdown } from "./markdown";
 import { WeatherCard } from "./tool/weather-card";
 import { RepoListCard, type RepoListOutput } from "./tool/repo-list-card";
+import { PrListCard, type PrListOutput } from "./tool/pr-list-card";
 import { ToolResult } from "./tool/tool-result";
 import { Button } from "@/components/ui/button";
 import {
@@ -123,6 +124,9 @@ function ToolPart({
     }
     if (name === "list_repos") {
       return <RepoListCard output={part.output as RepoListOutput} />;
+    }
+    if (name === "list_prs") {
+      return <PrListCard output={part.output as PrListOutput} />;
     }
     return <ToolResult name={name} output={part.output} />;
   }
