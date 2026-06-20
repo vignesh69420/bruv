@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button";
 import { WeatherCard } from "./tool/weather-card";
 import { RepoListCard, type RepoListOutput } from "./tool/repo-list-card";
 import { PrListCard, type PrListOutput } from "./tool/pr-list-card";
+import { ImageCard, type ImageOutput } from "./tool/image-card";
+import { FortniteCard, type FortniteOutput } from "./tool/fortnite-card";
 import { ToolResult } from "./tool/tool-result";
 
 export function ChatMessage({
@@ -121,6 +123,13 @@ function ToolPart({
     }
     if (name === "list_prs") {
       return <PrListCard output={part.output as PrListOutput} />;
+    }
+    if (name === "generate_image") {
+      return <ImageCard output={part.output as ImageOutput} />;
+    }
+    if (name === "fortnite_stats") {
+      const out = part.output as FortniteOutput & { error?: string };
+      return out?.error ? null : <FortniteCard output={out} />;
     }
     return <ToolResult name={name} output={part.output} />;
   }
