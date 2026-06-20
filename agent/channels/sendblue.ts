@@ -204,7 +204,7 @@ async function dispatchInbound(
   // iMessage reuses one long-lived session per contact, so the session.started
   // memory injection only runs once. Re-inject the user's identity + memory as
   // per-turn context so it stays current on every message.
-  const turnContext = [...IMESSAGE_CHANNEL_CONTEXT];
+  const turnContext: string[] = [...IMESSAGE_CHANNEL_CONTEXT];
   const userContext = await fetchUserContext(link.appUserId);
   if (userContext) {
     turnContext.push(buildUserContextPrompt(userContext));
