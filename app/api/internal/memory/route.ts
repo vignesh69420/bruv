@@ -4,7 +4,10 @@ import {
   memoryCategorySchema,
 } from "@/lib/schemas/memory";
 import { listMemoryForUser, setMemoryForCategory } from "@/lib/server/memory";
-import { getOrCreateProfileForUser } from "@/lib/server/profile";
+import {
+  getOrCreateProfileForUser,
+  getProfileWithUser,
+} from "@/lib/server/profile";
 import { requireInternalRequest } from "@/lib/server/internal-api";
 import { errorResponse, queryParams } from "@/lib/server/http";
 
@@ -19,10 +22,13 @@ export async function GET(request: Request) {
   try {
     requireInternalRequest(request);
     const { userId } = internalMemoryQuerySchema.parse(queryParams(request));
-    const [profile, memory] = await Promise.all([
-      getOrCreateProfileForUser(userId),
+    const [profileWithUser, memory] = await Promise.all([
+      getProfileWithUser(userId),
       listMemoryForUser(userId),
     ]);
+    // getProfileWithUser includes name/email/phone; fall back to the bare
+    // profile only if the user record is somehow missing.
+    const profile = profileWithUser ?? (await getOrCreateProfileForUser(userId));
     return Response.json({ profile, memory });
   } catch (error) {
     return errorResponse(error);

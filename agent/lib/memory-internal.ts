@@ -1,9 +1,9 @@
 import type { MemoryByCategory } from "../../shared/types/memory.js";
-import type { UserProfile } from "../../shared/types/profile.js";
+import type { UserProfile, UserProfileWithUser } from "../../shared/types/profile.js";
 import { appOrigin, internalHeaders } from "./internal-api.js";
 
 export interface UserContextPayload {
-  profile: UserProfile;
+  profile: UserProfile & Partial<Pick<UserProfileWithUser, "name" | "email">>;
   memory: MemoryByCategory;
 }
 
@@ -50,6 +50,9 @@ export function buildUserContextPrompt(context: UserContextPayload) {
   const parts: string[] = [];
 
   parts.push("# About this user");
+  if (profile.name) {
+    parts.push(`Their name is ${profile.name}${profile.email ? ` (${profile.email})` : ""}. This is who you are talking to — greet and refer to them by name.`);
+  }
   if (profile.bio) {
     parts.push(profile.bio);
   }
