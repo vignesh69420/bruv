@@ -4,6 +4,7 @@ import type { SendblueMessagePayload } from "chat-adapter-sendblue";
 import { agent } from "../../shared/agent.js";
 import { buildAppSessionAuth } from "../../shared/slack-auth.js";
 import { fetchPhoneLinkForNumber } from "../lib/phone-internal.js";
+import { buildUserContextPrompt, fetchUserContext } from "../lib/memory-internal.js";
 import {
   contactNumberFromPayload,
   getSendblueAdapter,
@@ -200,6 +201,15 @@ async function dispatchInbound(
 
   const fromNumber = resolveSendblueLineNumber(payload);
 
+  // iMessage reuses one long-lived session per contact, so the session.started
+  // memory injection only runs once. Re-inject the user's identity + memory as
+  // per-turn context so it stays current on every message.
+  const turnContext = [...IMESSAGE_CHANNEL_CONTEXT];
+  const userContext = await fetchUserContext(link.appUserId);
+  if (userContext) {
+    turnContext.push(buildUserContextPrompt(userContext));
+  }
+
   const sendOptions = {
     auth,
     continuationToken: threadId,
@@ -223,7 +233,7 @@ async function dispatchInbound(
     await send(
       {
         message: text,
-        context: [...IMESSAGE_CHANNEL_CONTEXT],
+        context: turnContext,
       },
       sendOptions,
     );
