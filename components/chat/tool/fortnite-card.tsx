@@ -1,6 +1,6 @@
 "use client";
 
-import { Gamepad2 } from "lucide-react";
+import { TrophyIcon } from "@heroicons/react/24/outline";
 
 export interface FortniteOutput {
   name: string;
@@ -27,7 +27,7 @@ export function FortniteCard({ output }: { output: FortniteOutput }) {
     <div className="bg-card w-full max-w-sm rounded-xl border p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Gamepad2 className="text-muted-foreground size-4" />
+          <TrophyIcon className="text-muted-foreground size-4" />
           <span className="text-sm font-medium">{output.name}</span>
         </div>
         {output.level != null && (

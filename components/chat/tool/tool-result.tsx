@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Wrench } from "lucide-react";
+import { ChevronRightIcon, WrenchIcon } from "@heroicons/react/24/outline";
 import {
   Collapsible,
   CollapsibleContent,
@@ -42,9 +42,9 @@ export function ToolResult({ name, output }: { name: string; output: unknown }) 
   return (
     <Collapsible className="bg-card w-full max-w-md rounded-xl border">
       <CollapsibleTrigger className="text-muted-foreground hover:text-foreground flex w-full items-center gap-1.5 px-3 py-2 text-xs transition-colors">
-        <Wrench className="size-3.5" />
+        <WrenchIcon className="size-3.5" />
         <span className="font-mono">used {name}</span>
-        <ChevronRight className="ml-auto size-3" />
+        <ChevronRightIcon className="ml-auto size-3" />
       </CollapsibleTrigger>
       <CollapsibleContent className="border-t px-3 py-2 text-xs">
         <Markdown>{extractText(output)}</Markdown>

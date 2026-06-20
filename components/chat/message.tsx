@@ -7,7 +7,7 @@ import type {
   EveMessagePart,
 } from "eve/react";
 import type { InputResponse } from "eve/client";
-import { Wrench } from "lucide-react";
+import { WrenchIcon } from "@heroicons/react/24/outline";
 import type { WeatherOutput } from "@/shared/tools/weather";
 import {
   Message,
@@ -148,7 +148,7 @@ function ToolPart({
 
   return (
     <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-      <Wrench className="size-3.5" />
+      <WrenchIcon className="size-3.5" />
       <span className="font-mono">{label}</span>
     </div>
   );

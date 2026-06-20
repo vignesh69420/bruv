@@ -1,7 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LogOut, Plug, Settings, Shield } from "lucide-react";
+import {
+  ArrowRightStartOnRectangleIcon,
+  PuzzlePieceIcon,
+  Cog6ToothIcon,
+  ShieldCheckIcon,
+} from "@heroicons/react/24/outline";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -42,11 +47,11 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => router.push("/settings/profile")}>
-            <Settings data-icon="inline-start" />
+            <Cog6ToothIcon data-icon="inline-start" />
             profile
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push("/settings/integrations")}>
-            <Plug data-icon="inline-start" />
+            <PuzzlePieceIcon data-icon="inline-start" />
             integrations
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -55,7 +60,7 @@ export function UserMenu() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => router.push("/admin")}>
-                <Shield data-icon="inline-start" />
+                <ShieldCheckIcon data-icon="inline-start" />
                 admin
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -69,7 +74,7 @@ export function UserMenu() {
               router.push("/login");
             }}
           >
-            <LogOut data-icon="inline-start" />
+            <ArrowRightStartOnRectangleIcon data-icon="inline-start" />
             sign out
           </DropdownMenuItem>
         </DropdownMenuGroup>

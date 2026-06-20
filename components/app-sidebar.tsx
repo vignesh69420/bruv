@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useThreads } from "@/hooks/use-threads";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -57,7 +57,7 @@ export function AppSidebar() {
           size="sm"
           className="w-full justify-start bg-transparent font-normal"
         >
-          <Plus data-icon="inline-start" />
+          <PlusIcon data-icon="inline-start" />
           new chat
         </Button>
       </SidebarHeader>
@@ -84,7 +84,7 @@ export function AppSidebar() {
                     if (params?.id === thread.id) router.push("/");
                   }}
                 >
-                  <Trash2 />
+                  <TrashIcon />
                 </SidebarMenuAction>
               </SidebarMenuItem>
             ))}

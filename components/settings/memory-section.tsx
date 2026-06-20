@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Copy, Pencil, Trash2 } from "lucide-react";
+import { ClipboardIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useMemory } from "@/hooks/use-memory";
 import { MEMORY_CATEGORIES, MEMORY_CATEGORY_LABELS } from "@/shared/types/memory";
 import { MEMORY_EXPORT_PROMPT } from "@/shared/memory/export-prompt";
@@ -63,7 +63,7 @@ export function MemorySection() {
                         setDraft(entry.content);
                       }}
                     >
-                      <Pencil />
+                      <PencilSquareIcon />
                     </Button>
                     <Button
                       variant="ghost"
@@ -75,7 +75,7 @@ export function MemorySection() {
                         toast.success("removed");
                       }}
                     >
-                      <Trash2 />
+                      <TrashIcon />
                     </Button>
                   </div>
                 )}
@@ -161,7 +161,7 @@ function ImportDialog({
           </DialogHeader>
           <div className="flex flex-col gap-3">
             <Button variant="outline" size="sm" onClick={copyPrompt}>
-              <Copy data-icon="inline-start" />
+              <ClipboardIcon data-icon="inline-start" />
               copy export prompt
             </Button>
             <Textarea

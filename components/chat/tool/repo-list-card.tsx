@@ -1,6 +1,6 @@
 "use client";
 
-import { GitBranch, Lock } from "lucide-react";
+import { FolderIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 
 interface Repo {
   name: string;
@@ -24,7 +24,7 @@ export function RepoListCard({ output }: { output: RepoListOutput }) {
   return (
     <div className="bg-card w-full max-w-md rounded-xl border p-1">
       <div className="text-muted-foreground flex items-center gap-1.5 px-3 py-2 text-xs">
-        <GitBranch className="size-3.5" />
+        <FolderIcon className="size-3.5" />
         {output.total} {output.total === 1 ? "repository" : "repositories"}
       </div>
       <ul className="flex flex-col">
@@ -38,7 +38,7 @@ export function RepoListCard({ output }: { output: RepoListOutput }) {
             >
               <span className="truncate font-mono text-xs">{repo.name}</span>
               {repo.private && (
-                <Lock className="text-muted-foreground ml-auto size-3 shrink-0" />
+                <LockClosedIcon className="text-muted-foreground ml-auto size-3 shrink-0" />
               )}
             </a>
           </li>

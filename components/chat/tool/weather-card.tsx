@@ -1,32 +1,23 @@
 "use client";
 
-import {
-  Cloud,
-  CloudDrizzle,
-  CloudFog,
-  CloudLightning,
-  CloudRain,
-  CloudSnow,
-  CloudSun,
-  Sun,
-  type LucideIcon,
-} from "lucide-react";
+import { BoltIcon, CloudIcon, SunIcon } from "@heroicons/react/24/outline";
+import { type ComponentType, type SVGProps } from "react";
 import type { WeatherOutput } from "@/shared/tools/weather";
 import { cn } from "@/lib/utils";
 
-const ICONS: Record<string, LucideIcon> = {
-  sun: Sun,
-  cloud: Cloud,
-  "cloud-sun": CloudSun,
-  "cloud-fog": CloudFog,
-  "cloud-drizzle": CloudDrizzle,
-  "cloud-rain": CloudRain,
-  "cloud-snow": CloudSnow,
-  "cloud-lightning": CloudLightning,
+const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
+  sun: SunIcon,
+  cloud: CloudIcon,
+  "cloud-sun": CloudIcon,
+  "cloud-fog": CloudIcon,
+  "cloud-drizzle": CloudIcon,
+  "cloud-rain": CloudIcon,
+  "cloud-snow": CloudIcon,
+  "cloud-lightning": BoltIcon,
 };
 
 function WeatherIcon({ name, className }: { name: string; className?: string }) {
-  const Icon = ICONS[name] ?? Cloud;
+  const Icon = ICONS[name] ?? CloudIcon;
   return <Icon className={className} />;
 }
 

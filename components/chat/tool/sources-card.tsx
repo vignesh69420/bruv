@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe } from "lucide-react";
+import { GlobeAltIcon } from "@heroicons/react/24/outline";
 
 export interface WebSearchOutput {
   query: string;
@@ -23,7 +23,7 @@ export function SourcesCard({ output }: { output: WebSearchOutput }) {
   return (
     <div className="bg-card w-full max-w-md rounded-xl border p-1">
       <div className="text-muted-foreground flex items-center gap-1.5 px-3 py-2 text-xs">
-        <Globe className="size-3.5" />
+        <GlobeAltIcon className="size-3.5" />
         {results.length} sources
       </div>
       <ul className="flex flex-col">
