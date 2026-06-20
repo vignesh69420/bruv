@@ -4,7 +4,7 @@ import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { signIn, signUp } from "@/lib/auth-client";
-import { GithubMark } from "@/components/github-mark";
+import { CodeBracketIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,7 +68,7 @@ function LoginForm() {
             className="w-full"
             onClick={onGithub}
           >
-            <GithubMark data-icon="inline-start" className="size-4" />
+            <CodeBracketIcon data-icon="inline-start" className="size-4" />
             continue with github
           </Button>
           <div className="flex items-center gap-3">
