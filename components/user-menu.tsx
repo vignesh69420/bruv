@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LogOut, Plug, Settings } from "lucide-react";
+import { LogOut, Plug, Settings, Shield } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -19,6 +19,7 @@ export function UserMenu() {
   const router = useRouter();
   const user = data?.user;
   const initial = (user?.name ?? user?.email ?? "?").slice(0, 1).toUpperCase();
+  const isAdmin = user?.email?.toLowerCase() === "akx9@icloud.com";
 
   return (
     <DropdownMenu>
@@ -49,6 +50,17 @@ export function UserMenu() {
             integrations
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => router.push("/admin")}>
+                <Shield data-icon="inline-start" />
+                admin
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
