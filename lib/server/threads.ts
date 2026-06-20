@@ -53,14 +53,26 @@ function rowToRecord(row: typeof schema.threads.$inferSelect): ThreadRecord {
 }
 
 export async function listThreadsForUser(userId: string): Promise<ThreadSummary[]> {
+  // Only the summary columns — never pull the (potentially huge) `state` blob
+  // just to render a list of titles.
   const rows = await db
-    .select()
+    .select({
+      id: schema.threads.id,
+      title: schema.threads.title,
+      createdAt: schema.threads.createdAt,
+      updatedAt: schema.threads.updatedAt,
+    })
     .from(schema.threads)
     .where(eq(schema.threads.userId, userId))
     .orderBy(desc(schema.threads.updatedAt))
     .limit(LIST_LIMIT);
 
-  return rows.map(rowToSummary);
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    createdAt: row.createdAt.getTime(),
+    updatedAt: row.updatedAt.getTime(),
+  }));
 }
 
 export async function getThreadForUser(userId: string, id: string) {

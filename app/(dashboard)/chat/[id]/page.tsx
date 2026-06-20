@@ -1,6 +1,5 @@
-import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "@/lib/server/session";
 import { getThreadForUser } from "@/lib/server/threads";
 import { Chat } from "@/components/chat/chat";
 
@@ -10,7 +9,7 @@ export default async function ChatPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getServerSession();
   if (!session?.user) {
     redirect("/login");
   }
