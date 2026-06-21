@@ -16,7 +16,7 @@ export interface AdminStats {
   memoryEntries: number;
   imessageLinked: number;
   slackLinked: number;
-  recentSignups: {
+  allUsers: {
     id: string;
     email: string;
     name: string;
@@ -146,7 +146,7 @@ export async function getAdminStats(): Promise<AdminStats> {
     }
   }
 
-  const recent = await db
+  const allUsers = await db
     .select({
       id: schema.user.id,
       email: schema.user.email,
@@ -154,8 +154,7 @@ export async function getAdminStats(): Promise<AdminStats> {
       createdAt: schema.user.createdAt,
     })
     .from(schema.user)
-    .orderBy(desc(schema.user.createdAt))
-    .limit(10);
+    .orderBy(desc(schema.user.createdAt));
 
   const tokens = await fetchTokenUsage();
 
@@ -166,7 +165,7 @@ export async function getAdminStats(): Promise<AdminStats> {
     memoryEntries,
     imessageLinked,
     slackLinked,
-    recentSignups: recent.map((r) => ({
+    allUsers: allUsers.map((r) => ({
       id: r.id,
       email: r.email,
       name: r.name,

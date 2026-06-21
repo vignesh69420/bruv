@@ -114,14 +114,14 @@ export default async function AdminPage() {
 
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="text-base lowercase">recent signups</CardTitle>
+          <CardTitle className="text-base lowercase">all users</CardTitle>
         </CardHeader>
         <CardContent>
-          {stats.recentSignups.length === 0 ? (
+          {stats.allUsers.length === 0 ? (
             <p className="text-muted-foreground text-sm">none yet</p>
           ) : (
             <div className="flex flex-col">
-              {stats.recentSignups.map((u) => (
+              {stats.allUsers.map((u) => (
                 <div
                   key={u.id}
                   className="flex items-center justify-between border-b py-2 text-sm last:border-0"
