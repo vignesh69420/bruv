@@ -27,11 +27,11 @@ export function DiffCard({ output }: { output: ShowDiffOutput }) {
   }
 
   return (
-    <div className="bg-card w-full max-w-md overflow-hidden rounded-xl border transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
+    <div className="bg-card w-full overflow-hidden rounded-xl border transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
       {/* @pierre/diffs draws its own per-file headers + syntax-highlighted diff */}
       <PatchDiff
         patch={output.patch}
-        options={{ overflow: "wrap" }}
+        options={{ overflow: "scroll" }}
         disableWorkerPool
       />
       {output.truncated && (
