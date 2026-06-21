@@ -78,6 +78,16 @@ function PlainDiff({ patch }: { patch: string }) {
   );
 }
 
+// PatchDiff renders exactly ONE file ("Provided patch must contain exactly 1
+// file diff"), so split a multi-file `git diff` on its per-file "diff --git"
+// headers and render one PatchDiff per file.
+function splitPatchByFile(patch: string): string[] {
+  return patch
+    .split(/(?=^diff --git )/m)
+    .map((p) => p.trim())
+    .filter(Boolean);
+}
+
 export function DiffCard({ output }: { output: ShowDiffOutput }) {
   if (output.empty) {
     return (
@@ -88,16 +98,25 @@ export function DiffCard({ output }: { output: ShowDiffOutput }) {
     );
   }
 
+  const filePatches = splitPatchByFile(output.patch);
+  // Fall back to one block if we couldn't find file boundaries.
+  const patches = filePatches.length > 0 ? filePatches : [output.patch];
+
   return (
     <div className="bg-card w-full overflow-hidden rounded-xl border transition-shadow hover:shadow-md animate-in fade-in slide-in-from-bottom-1 duration-300">
-      {/* @pierre/diffs draws its own per-file headers + syntax-highlighted diff */}
-      <DiffErrorBoundary fallback={<PlainDiff patch={output.patch} />}>
-        <PatchDiff
-          patch={output.patch}
-          options={{ overflow: "scroll" }}
-          disableWorkerPool
-        />
-      </DiffErrorBoundary>
+      {/* @pierre/diffs draws its own per-file headers + syntax-highlighted diff.
+          Each file is guarded so one bad patch can't break the others. */}
+      {patches.map((filePatch, i) => (
+        <div key={i} className={cn(i > 0 && "border-t")}>
+          <DiffErrorBoundary fallback={<PlainDiff patch={filePatch} />}>
+            <PatchDiff
+              patch={filePatch}
+              options={{ overflow: "scroll" }}
+              disableWorkerPool
+            />
+          </DiffErrorBoundary>
+        </div>
+      ))}
       {output.truncated && (
         <p className="text-muted-foreground border-t px-3 py-1.5 text-xs">
           diff truncated — open the PR to see the rest
