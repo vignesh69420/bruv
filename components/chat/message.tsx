@@ -33,6 +33,8 @@ import { PrListCard, type PrListOutput } from "./tool/pr-list-card";
 import { ImageCard, type ImageOutput } from "./tool/image-card";
 import { FortniteCard, type FortniteOutput } from "./tool/fortnite-card";
 import { SourcesCard, type WebSearchOutput } from "./tool/sources-card";
+import { DiffCard } from "./tool/diff-card";
+import type { ShowDiffOutput } from "@/shared/tools/show_diff";
 import { ToolResult } from "./tool/tool-result";
 
 export function ChatMessage({
@@ -178,6 +180,14 @@ function ToolPart({
       const out = part.output as WebSearchOutput & { error?: string };
       return out?.error ? null : <SourcesCard output={out} />;
     }
+    if (name === "show_diff") {
+      const out = part.output as ShowDiffOutput & { error?: string };
+      return out?.error ? (
+        <ToolResult name={name} output={part.output} />
+      ) : (
+        <DiffCard output={out} />
+      );
+    }
     return <ToolResult name={name} output={part.output} />;
   }
 
@@ -219,6 +229,8 @@ const RUNNING_LABELS: Record<string, string> = {
   fortnite_stats: "loading fortnite stats",
   web_search: "searching the web",
   save_memory: "saving to memory",
+  show_diff: "reading the diff",
+  open_pull_request: "opening the pr",
 };
 
 function ApprovalRequest({
